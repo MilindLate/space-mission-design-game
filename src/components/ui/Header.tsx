@@ -5,49 +5,68 @@ import { Rocket, Cpu, Navigation, Radio, BarChart3, Check } from 'lucide-react';
 import type { GameStep } from '@/types';
 
 const STEPS: { label: string; icon: React.ReactNode; desc: string }[] = [
-  { label: 'Destination', icon: <Navigation className="w-4 h-4" />, desc: 'Choose target orbit' },
-  { label: 'Assembly',    icon: <Cpu className="w-4 h-4" />,        desc: 'Build spacecraft' },
-  { label: 'Launcher',   icon: <Rocket className="w-4 h-4" />,      desc: 'Select rocket' },
-  { label: 'Simulation', icon: <Radio className="w-4 h-4" />,       desc: 'Run mission' },
-  { label: 'Report',     icon: <BarChart3 className="w-4 h-4" />,   desc: 'Post-mission' },
+  { label: 'Destination', icon: <Navigation className="w-4 h-4" />, desc: 'Choose target' },
+  { label: 'Assembly',    icon: <Cpu className="w-4 h-4" />,        desc: 'Build craft' },
+  { label: 'Launcher',    icon: <Rocket className="w-4 h-4" />,     desc: 'Pick rocket' },
+  { label: 'Simulation',  icon: <Radio className="w-4 h-4" />,      desc: 'Fly mission' },
+  { label: 'Report',      icon: <BarChart3 className="w-4 h-4" />,  desc: 'Results' },
 ];
 
 export default function Header() {
   const currentStep = useMissionStore((s) => s.currentStep);
   const destination = useMissionStore((s) => s.mission.destination);
+  const resources = useMissionStore((s) => s.resources);
+  const resetMission = useMissionStore((s) => s.resetMission);
+
+  const progressPct = ((currentStep + 1) / STEPS.length) * 100;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[var(--space-border)] bg-[var(--space-surface)]/90 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-3">
-        {/* Top bar */}
-        <div className="flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-800/60" style={{ background: 'rgba(2, 4, 8, 0.85)', backdropFilter: 'blur(20px)' }}>
+      {/* Progress bar */}
+      <div className="h-[3px] w-full bg-slate-800/50">
+        <div
+          className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-700"
+          style={{ width: `${progressPct}%`, boxShadow: '0 0 12px rgba(14,165,233,0.5)' }}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-2.5">
+        {/* Top row */}
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[var(--space-accent)] flex items-center justify-center">
+            <button
+              onClick={resetMission}
+              className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all"
+            >
               <Rocket className="w-4 h-4 text-white" />
-            </div>
+            </button>
             <div>
-              <h1 className="text-sm font-bold tracking-wide text-[var(--space-text)]">
-                SPACE MISSION DESIGN GAME
+              <h1 className="text-sm font-bold tracking-wide text-white">
+                SPACE MISSION
               </h1>
-              <p className="text-[10px] text-[var(--space-muted)] uppercase tracking-widest">
-                NASA Space Apps Challenge 2026
+              <p className="text-[9px] text-slate-500 uppercase tracking-[0.2em]">
+                Design Game
               </p>
             </div>
           </div>
 
-          {destination && (
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--space-border)] text-xs text-[var(--space-muted)]">
-              <span
-                className="w-2 h-2 rounded-full"
-                style={{ background: destination.color }}
-              />
-              {destination.name}
-            </div>
-          )}
+          {/* Mission info + resources mini */}
+          <div className="hidden md:flex items-center gap-4">
+            {destination && (
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/50 border border-slate-700/50 text-xs">
+                <span className="w-2 h-2 rounded-full" style={{ background: destination.color, boxShadow: `0 0 6px ${destination.color}` }} />
+                <span className="text-slate-300 font-medium">{destination.name}</span>
+                <span className="text-slate-600">·</span>
+                <span className="text-slate-500 font-mono">{resources.totalMass.toFixed(0)} kg</span>
+                <span className="text-slate-600">·</span>
+                <span className="text-cyan-500 font-mono">{resources.powerGenerated.toFixed(0)} W</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Step progress */}
-        <nav className="flex items-center gap-1" aria-label="Mission progress">
+        <nav className="flex items-center gap-0.5" aria-label="Mission progress">
           {STEPS.map((step, idx) => {
             const stepIdx = idx as GameStep;
             const done = currentStep > stepIdx;
@@ -56,35 +75,39 @@ export default function Header() {
             return (
               <div key={step.label} className="flex items-center flex-1 min-w-0">
                 <div
-                  className={`
-                    flex flex-col items-center gap-1 flex-1 min-w-0 px-1 py-1.5 rounded-lg transition-all duration-200
-                    ${active ? 'bg-[var(--space-accent)]/10 border border-[var(--space-accent)]/40' : ''}
-                    ${done ? 'opacity-60' : ''}
-                    ${!active && !done ? 'opacity-40' : ''}
-                  `}
+                  className={`flex items-center gap-2 flex-1 min-w-0 px-3 py-2 rounded-xl transition-all duration-300 ${
+                    active
+                      ? 'bg-cyan-500/10 border border-cyan-500/30'
+                      : done
+                        ? 'bg-green-500/5 border border-transparent'
+                        : 'border border-transparent opacity-40'
+                  }`}
                 >
+                  {/* Circle */}
                   <div
-                    className={`
-                      flex items-center justify-center w-6 h-6 rounded-full border transition-colors
-                      ${active ? 'bg-[var(--space-accent)] border-[var(--space-accent)] text-white' : ''}
-                      ${done ? 'bg-[var(--space-green)] border-[var(--space-green)] text-white' : ''}
-                      ${!active && !done ? 'border-[var(--space-border)] text-[var(--space-muted)]' : ''}
-                    `}
+                    className={`flex items-center justify-center w-7 h-7 rounded-full border-2 transition-all duration-300 shrink-0 ${
+                      active
+                        ? 'bg-cyan-500 border-cyan-500 text-white shadow-lg shadow-cyan-500/30'
+                        : done
+                          ? 'bg-green-500 border-green-500 text-white'
+                          : 'border-slate-700 text-slate-600'
+                    }`}
                   >
-                    {done ? <Check className="w-3 h-3" /> : step.icon}
+                    {done ? <Check className="w-3.5 h-3.5" /> : step.icon}
                   </div>
-                  <span className="text-[10px] font-medium text-center leading-tight hidden sm:block truncate w-full text-center">
-                    {step.label}
-                  </span>
+
+                  {/* Text */}
+                  <div className="hidden lg:block min-w-0">
+                    <div className={`text-[11px] font-semibold truncate ${active ? 'text-cyan-300' : done ? 'text-green-400/70' : 'text-slate-600'}`}>
+                      {step.label}
+                    </div>
+                    <div className="text-[9px] text-slate-600 truncate">{step.desc}</div>
+                  </div>
                 </div>
 
+                {/* Connector */}
                 {idx < STEPS.length - 1 && (
-                  <div
-                    className="h-px flex-shrink-0 w-3 mx-0.5 transition-colors"
-                    style={{
-                      background: done ? 'var(--space-green)' : 'var(--space-border)',
-                    }}
-                  />
+                  <div className={`h-[2px] w-4 mx-0.5 shrink-0 rounded transition-colors duration-500 ${done ? 'bg-green-500/50' : 'bg-slate-800'}`} />
                 )}
               </div>
             );

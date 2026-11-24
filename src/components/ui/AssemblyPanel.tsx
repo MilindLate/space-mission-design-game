@@ -3,16 +3,16 @@
 import { useState } from 'react';
 import { useMissionStore } from '@/lib/store/useMissionStore';
 import { COMPONENTS_CATALOG, getComponentsByCategory } from '@/lib/data/componentsCatalog';
-import { Plus, Minus, Info } from 'lucide-react';
+import { Plus, Minus, Info, Cpu, Zap, Flame, Radio, Telescope, Thermometer } from 'lucide-react';
 import type { SpacecraftComponent } from '@/types';
 
-const CATEGORIES: { id: SpacecraftComponent['category']; label: string }[] = [
-  { id: 'structure',      label: '🛰 Structure' },
-  { id: 'power',         label: '⚡ Power' },
-  { id: 'propulsion',    label: '🔥 Propulsion' },
-  { id: 'communications',label: '📡 Comms' },
-  { id: 'payload',       label: '🔭 Payload' },
-  { id: 'thermal',       label: '🌡 Thermal' },
+const CATEGORIES: { id: SpacecraftComponent['category']; label: string; icon: React.ReactNode }[] = [
+  { id: 'structure',       label: 'Structure',  icon: <Cpu className="w-3 h-3" /> },
+  { id: 'power',           label: 'Power',      icon: <Zap className="w-3 h-3" /> },
+  { id: 'propulsion',      label: 'Propulsion', icon: <Flame className="w-3 h-3" /> },
+  { id: 'communications',  label: 'Comms',      icon: <Radio className="w-3 h-3" /> },
+  { id: 'payload',         label: 'Payload',    icon: <Telescope className="w-3 h-3" /> },
+  { id: 'thermal',         label: 'Thermal',    icon: <Thermometer className="w-3 h-3" /> },
 ];
 
 interface ComponentCardProps {
@@ -33,72 +33,75 @@ function ComponentCard({ component, count, destinationId, onAdd, onRemove }: Com
 
   return (
     <div
-      className={`component-card ${isSelected ? 'selected' : ''} ${incompatible ? 'opacity-40' : ''}`}
-      title={incompatible ? `Not compatible with selected destination` : ''}
+      className={`component-card ${isSelected ? 'selected' : ''} ${incompatible ? 'opacity-30 pointer-events-none' : ''}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <span className="text-xs font-semibold text-[var(--space-text)] leading-tight truncate">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-xs font-bold text-white leading-tight truncate">
               {component.name}
             </span>
             {component.radiationHardened && (
-              <span className="text-[9px] px-1 rounded bg-[var(--space-purple)]/20 text-[var(--space-purple)] shrink-0">
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30 font-bold">
                 RAD-HARD
               </span>
             )}
           </div>
 
           {/* Quick stats */}
-          <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] text-[var(--space-muted)] mt-1">
-            <span>⚖ {component.mass}kg</span>
+          <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] text-slate-500 mt-1">
+            <span className="font-mono">⚖ {component.mass}kg</span>
             {component.powerDraw < 0
-              ? <span className="text-[var(--space-green)]">⚡+{Math.abs(component.powerDraw)}W</span>
-              : <span>⚡{component.powerDraw}W</span>
+              ? <span className="text-green-400 font-mono">⚡+{Math.abs(component.powerDraw)}W</span>
+              : <span className="font-mono">⚡{component.powerDraw}W</span>
             }
-            <span>💲{component.cost}M</span>
-            {component.dataRateMbps > 0 && <span>📡{component.dataRateMbps}Mbps</span>}
-            {component.storageGB > 0 && <span>💾{component.storageGB}GB</span>}
-            <span>🛡{(component.reliability * 100).toFixed(0)}%</span>
+            <span className="text-yellow-400 font-mono">💲{component.cost}M</span>
+            {component.dataRateMbps > 0 && <span className="font-mono">📡{component.dataRateMbps}Mbps</span>}
+            {component.storageGB > 0 && <span className="font-mono">💾{component.storageGB}GB</span>}
+            <span className="font-mono">🛡{(component.reliability * 100).toFixed(0)}%</span>
           </div>
 
           {/* Description on expand */}
           {showInfo && (
-            <p className="text-[10px] text-[var(--space-muted)] mt-1.5 leading-relaxed">
-              {component.description}
-              <span className="block mt-1 text-[var(--space-accent)]/70">Ref: {component.nasaRef}</span>
-            </p>
+            <div className="mt-2 p-2.5 rounded-lg bg-slate-800/50 border border-slate-700/40">
+              <p className="text-[10px] text-slate-400 leading-relaxed">
+                {component.description}
+              </p>
+              <span className="block mt-1.5 text-[9px] text-cyan-500/60 font-mono">Ref: {component.nasaRef}</span>
+            </div>
           )}
         </div>
 
         {/* Controls */}
-        <div className="flex flex-col items-center gap-1 shrink-0">
+        <div className="flex flex-col items-center gap-1.5 shrink-0">
           <button
             onClick={(e) => { e.stopPropagation(); setShowInfo((v) => !v); }}
-            className="text-[var(--space-muted)] hover:text-[var(--space-accent)] transition-colors"
+            className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all ${
+              showInfo ? 'bg-cyan-500/15 text-cyan-400' : 'text-slate-600 hover:text-cyan-400 hover:bg-cyan-500/10'
+            }`}
             aria-label="Toggle info"
           >
             <Info className="w-3 h-3" />
           </button>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             <button
               onClick={onRemove}
-              disabled={count === 0 || incompatible}
-              className="w-5 h-5 rounded flex items-center justify-center border border-[var(--space-border)] text-[var(--space-muted)] hover:border-[var(--space-red)] hover:text-[var(--space-red)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              disabled={count === 0}
+              className="w-6 h-6 rounded-lg flex items-center justify-center border border-slate-700 text-slate-500 hover:border-red-500/50 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
               aria-label="Remove"
             >
-              <Minus className="w-2.5 h-2.5" />
+              <Minus className="w-3 h-3" />
             </button>
-            <span className="w-4 text-center text-xs font-mono font-bold text-[var(--space-text)]">
+            <span className={`w-5 text-center text-xs font-mono font-bold ${isSelected ? 'text-cyan-400' : 'text-slate-600'}`}>
               {count}
             </span>
             <button
               onClick={onAdd}
-              disabled={atMax || incompatible}
-              className="w-5 h-5 rounded flex items-center justify-center border border-[var(--space-border)] text-[var(--space-muted)] hover:border-[var(--space-green)] hover:text-[var(--space-green)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              disabled={atMax}
+              className="w-6 h-6 rounded-lg flex items-center justify-center border border-slate-700 text-slate-500 hover:border-green-500/50 hover:text-green-400 hover:bg-green-500/10 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
               aria-label="Add"
             >
-              <Plus className="w-2.5 h-2.5" />
+              <Plus className="w-3 h-3" />
             </button>
           </div>
         </div>
@@ -120,23 +123,26 @@ export default function AssemblyPanel() {
     return installedComponents.find((e) => e.componentId === id)?.count ?? 0;
   }
 
+  const activeCat = CATEGORIES.find((c) => c.id === activeCategory);
+
   return (
     <div className="panel flex flex-col overflow-hidden h-full">
       {/* Category tabs */}
-      <div className="flex overflow-x-auto border-b border-[var(--space-border)] shrink-0">
+      <div className="flex overflow-x-auto border-b border-slate-800/60 shrink-0">
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setActiveCategory(cat.id)}
             className={`
-              px-3 py-2.5 text-[11px] font-medium whitespace-nowrap transition-colors border-b-2
+              flex items-center gap-1.5 px-4 py-3 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap transition-all border-b-2
               ${activeCategory === cat.id
-                ? 'border-[var(--space-accent)] text-[var(--space-accent)]'
-                : 'border-transparent text-[var(--space-muted)] hover:text-[var(--space-text)]'
+                ? 'border-cyan-500 text-cyan-400 bg-cyan-500/5'
+                : 'border-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-800/30'
               }
             `}
           >
-            {cat.label}
+            {cat.icon}
+            <span className="hidden sm:inline">{cat.label}</span>
           </button>
         ))}
       </div>
@@ -157,9 +163,14 @@ export default function AssemblyPanel() {
 
       {/* Installed summary */}
       {installedComponents.length > 0 && (
-        <div className="border-t border-[var(--space-border)] p-3 shrink-0">
-          <div className="text-[10px] uppercase tracking-widest text-[var(--space-muted)] mb-1.5">
-            Installed ({installedComponents.reduce((s, e) => s + e.count, 0)} items)
+        <div className="border-t border-slate-800/60 p-3 shrink-0 bg-slate-900/30">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">
+              Installed
+            </span>
+            <span className="text-[10px] font-mono text-cyan-400 font-bold">
+              {installedComponents.reduce((s, e) => s + e.count, 0)} items
+            </span>
           </div>
           <div className="flex flex-wrap gap-1">
             {installedComponents.map((entry) => {
@@ -168,7 +179,7 @@ export default function AssemblyPanel() {
               return (
                 <span
                   key={entry.componentId}
-                  className="text-[9px] px-1.5 py-0.5 rounded-full border border-[var(--space-accent)]/40 text-[var(--space-accent)]"
+                  className="text-[9px] px-2 py-1 rounded-lg border border-cyan-500/30 text-cyan-400/80 bg-cyan-500/5 font-mono"
                 >
                   {comp.name.split('(')[0].trim()} ×{entry.count}
                 </span>

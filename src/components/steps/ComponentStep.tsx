@@ -3,7 +3,7 @@
 import { useMissionStore } from '@/lib/store/useMissionStore';
 import AssemblyPanel from '@/components/ui/AssemblyPanel';
 import ResourceHUD from '@/components/ui/ResourceHUD';
-import { AlertTriangle, CheckCircle2, ChevronLeft } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ChevronLeft, ArrowRight, Cpu, Shield } from 'lucide-react';
 
 export default function ComponentStep() {
   const setStep = useMissionStore((s) => s.setStep);
@@ -43,23 +43,30 @@ export default function ComponentStep() {
   ];
 
   const readyForNext = checks.every((c) => c.ok);
+  const passedCount = checks.filter((c) => c.ok).length;
+  const checkPct = (passedCount / checks.length) * 100;
 
   return (
-    <div className="flex flex-col gap-4 fade-up">
-      <div>
-        <h2 className="text-xl font-bold text-[var(--space-text)] mb-1">Spacecraft Assembly</h2>
-        <p className="text-sm text-[var(--space-muted)]">
+    <div className="flex flex-col gap-6 fade-up">
+      {/* Briefing header */}
+      <div className="panel p-6 bg-gradient-to-r from-cyan-500/5 to-transparent">
+        <div className="flex items-center gap-2 text-xs font-mono text-cyan-500/70 uppercase tracking-[0.2em] mb-3">
+          <div className="w-6 h-px bg-cyan-500/30" />
+          STEP 2 OF 4 · SPACECRAFT ASSEMBLY
+        </div>
+        <h2 className="text-2xl font-black text-white mb-2">Build Your Spacecraft</h2>
+        <p className="text-sm text-slate-400 leading-relaxed max-w-2xl">
           Configure your spacecraft subsystems. Each component affects mass, power, cost, and data budgets in real time.
           {destination && (
-            <span className="text-[var(--space-accent)]"> Destination: {destination.name}.</span>
+            <span className="text-cyan-400 font-semibold"> Target: {destination.name}.</span>
           )}
         </p>
       </div>
 
       {/* Main two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4" style={{ minHeight: '520px' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4" style={{ minHeight: '540px' }}>
         {/* Component selector — takes 2/3 on large screens */}
-        <div className="lg:col-span-2 h-[520px]">
+        <div className="lg:col-span-2 h-[540px]">
           <AssemblyPanel />
         </div>
 
@@ -69,22 +76,50 @@ export default function ComponentStep() {
 
           {/* Subsystem checklist */}
           <div className="panel p-4">
-            <div className="text-xs font-bold uppercase tracking-widest text-[var(--space-muted)] mb-3">
-              Subsystem Checklist
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Shield className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                  Subsystem Checklist
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-slate-500">
+                {passedCount}/{checks.length}
+              </span>
             </div>
+
+            {/* Progress bar */}
+            <div className="gauge-track mb-3">
+              <div
+                className="gauge-fill"
+                style={{
+                  width: `${checkPct}%`,
+                  background: readyForNext ? '#22c55e' : '#eab308',
+                }}
+              />
+            </div>
+
             <div className="flex flex-col gap-2">
               {checks.map((c) => (
                 <div key={c.label} className="flex items-center gap-2 text-xs">
                   {c.ok
-                    ? <CheckCircle2 className="w-3.5 h-3.5 text-[var(--space-green)] shrink-0" />
-                    : <AlertTriangle className="w-3.5 h-3.5 text-[var(--space-muted)] shrink-0" />
+                    ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />
+                    : <AlertTriangle className="w-3.5 h-3.5 text-slate-600 shrink-0" />
                   }
-                  <span className={c.ok ? 'text-[var(--space-text)]' : 'text-[var(--space-muted)]'}>
+                  <span className={c.ok ? 'text-slate-300' : 'text-slate-600'}>
                     {c.label}
                   </span>
+                  {c.ok && (
+                    <span className="ml-auto text-[9px] text-green-500/60 font-mono">PASS</span>
+                  )}
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Installed count pill */}
+          <div className="text-center text-xs text-slate-500">
+            <span className="font-mono font-bold text-cyan-400">{installedCount}</span> components installed
           </div>
         </div>
       </div>
@@ -93,20 +128,22 @@ export default function ComponentStep() {
       <div className="flex items-center justify-between">
         <button onClick={() => setStep(0)} className="btn-ghost flex items-center gap-2">
           <ChevronLeft className="w-4 h-4" />
-          Back
+          Back to Missions
         </button>
         <div className="flex items-center gap-3">
           {!readyForNext && (
-            <span className="text-xs text-[var(--space-muted)]">
-              Complete all subsystem checks to continue
+            <span className="text-xs text-slate-500 flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 text-yellow-500" />
+              Complete all subsystem checks
             </span>
           )}
           <button
             onClick={() => setStep(2)}
             disabled={!readyForNext}
-            className="btn-primary"
+            className="btn-primary flex items-center gap-2"
           >
-            Select Launch Vehicle →
+            <span>Select Launch Vehicle</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>

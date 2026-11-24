@@ -1,7 +1,7 @@
 'use client';
 
 import { useMissionStore } from '@/lib/store/useMissionStore';
-import { Zap, Weight, DollarSign, Database, Wifi, AlertTriangle } from 'lucide-react';
+import { Zap, Weight, DollarSign, Database, Wifi, AlertTriangle, Gauge as GaugeIcon } from 'lucide-react';
 import ConceptTooltip from '@/components/education/ConceptTooltip';
 
 function clamp(val: number, min: number, max: number) {
@@ -33,14 +33,14 @@ function Gauge({ label, icon, current, max, unit, formatVal, invertColor }: Gaug
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between text-xs">
-        <div className="flex items-center gap-1.5 text-[var(--space-muted)]">
+        <div className="flex items-center gap-1.5 text-slate-400">
           <span className={`status-dot status-${status}`} />
           {icon}
-          <span>{label}</span>
+          <span className="font-medium">{label}</span>
         </div>
-        <span className="font-mono font-semibold text-[var(--space-text)]">
+        <span className="font-mono font-bold text-white">
           {formatVal ? formatVal(current) : current.toFixed(1)}
-          <span className="text-[var(--space-muted)] font-normal ml-0.5 text-[10px]">/ {formatVal ? formatVal(max) : max.toFixed(0)} {unit}</span>
+          <span className="text-slate-500 font-normal ml-0.5 text-[10px]">/ {formatVal ? formatVal(max) : max.toFixed(0)} {unit}</span>
         </span>
       </div>
       <div className="gauge-track">
@@ -66,15 +66,18 @@ export default function ResourceHUD() {
   const formatCost = (v: number) => `$${v.toFixed(1)}M`;
 
   return (
-    <div className="panel panel-glow p-4 flex flex-col gap-4">
+    <div className="panel p-4 flex flex-col gap-4" style={{ boxShadow: '0 0 24px var(--space-accent-glow), inset 0 1px 0 #ffffff08' }}>
       <div className="flex items-center justify-between">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-[var(--space-muted)]">
-          Resource Trade-Off Matrix
-        </h2>
+        <div className="flex items-center gap-2">
+          <GaugeIcon className="w-3.5 h-3.5 text-cyan-400" />
+          <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-slate-500">
+            Resource Matrix
+          </h2>
+        </div>
         {powerBalance < 0 && (
-          <div className="flex items-center gap-1 text-[var(--space-red)] text-xs font-semibold animate-pulse">
+          <div className="flex items-center gap-1 text-red-400 text-[10px] font-bold animate-pulse">
             <AlertTriangle className="w-3 h-3" />
-            Power Deficit
+            POWER DEFICIT
           </div>
         )}
       </div>
@@ -97,14 +100,14 @@ export default function ResourceHUD() {
       {/* Power generated vs peak demand */}
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between text-xs">
-          <div className="flex items-center gap-1.5 text-[var(--space-muted)]">
+          <div className="flex items-center gap-1.5 text-slate-400">
             <span className={`status-dot status-${powerStatus}`} />
             <Zap className="w-3 h-3" />
-            <span>Power</span>
+            <span className="font-medium">Power</span>
           </div>
-          <span className="font-mono font-semibold text-[var(--space-text)]">
+          <span className="font-mono font-bold text-white">
             {resources.powerGenerated.toFixed(0)}W gen
-            <span className="text-[var(--space-muted)] font-normal ml-1 text-[10px]">
+            <span className="text-slate-500 font-normal ml-1 text-[10px]">
               / {resources.peakPowerDraw.toFixed(0)}W peak
             </span>
           </span>
@@ -118,7 +121,7 @@ export default function ResourceHUD() {
             }}
           />
         </div>
-        <div className="text-[10px] text-right font-mono" style={{ color: powerBalance >= 0 ? '#22c55e' : '#ef4444' }}>
+        <div className="text-[10px] text-right font-mono font-bold" style={{ color: powerBalance >= 0 ? '#22c55e' : '#ef4444' }}>
           {powerBalance >= 0 ? '+' : ''}{powerBalance.toFixed(0)}W margin
         </div>
       </div>
@@ -157,22 +160,22 @@ export default function ResourceHUD() {
 
       {/* Delta-V budget */}
       {dvBudget && (
-        <div className="border-t border-[var(--space-border)] pt-3 flex flex-col gap-1">
-          <div className="text-[10px] uppercase tracking-widest text-[var(--space-muted)] mb-1">
+        <div className="border-t border-slate-800/60 pt-3 flex flex-col gap-1.5">
+          <div className="text-[10px] uppercase tracking-widest text-slate-500 mb-1 font-bold">
             ΔV Budget
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[var(--space-muted)]">Required</span>
-            <span className="font-mono">{dvBudget.total.toFixed(0)} m/s</span>
+            <span className="text-slate-400">Required</span>
+            <span className="font-mono font-bold text-white">{dvBudget.total.toFixed(0)} m/s</span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[var(--space-muted)]">Available</span>
-            <span className="font-mono">{dvBudget.available.toFixed(0)} m/s</span>
+            <span className="text-slate-400">Available</span>
+            <span className="font-mono font-bold text-white">{dvBudget.available.toFixed(0)} m/s</span>
           </div>
           <div className="flex items-center justify-between text-xs font-semibold">
-            <span>Margin</span>
+            <span className="text-white">Margin</span>
             <span
-              className="font-mono"
+              className="font-mono font-bold"
               style={{ color: dvBudget.feasible ? '#22c55e' : '#ef4444' }}
             >
               {dvBudget.margin >= 0 ? '+' : ''}{dvBudget.margin} m/s
@@ -182,22 +185,22 @@ export default function ResourceHUD() {
       )}
 
       {/* Summary row */}
-      <div className="border-t border-[var(--space-border)] pt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-[10px]">
+      <div className="border-t border-slate-800/60 pt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-[10px]">
         <div className="flex justify-between">
-          <span className="text-[var(--space-muted)]">Dry mass</span>
-          <span className="font-mono">{formatMass(resources.dryMass)}</span>
+          <span className="text-slate-500">Dry mass</span>
+          <span className="font-mono font-bold text-white">{formatMass(resources.dryMass)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-[var(--space-muted)]">Propellant</span>
-          <span className="font-mono">{formatMass(resources.propellantMass)}</span>
+          <span className="text-slate-500">Propellant</span>
+          <span className="font-mono font-bold text-white">{formatMass(resources.propellantMass)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-[var(--space-muted)]">Reliability</span>
-          <span className="font-mono">{(resources.averageReliability * 100).toFixed(1)}%</span>
+          <span className="text-slate-500">Reliability</span>
+          <span className="font-mono font-bold text-white">{(resources.averageReliability * 100).toFixed(1)}%</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-[var(--space-muted)]">Cont. draw</span>
-          <span className="font-mono">{resources.continuousPowerDraw.toFixed(0)}W</span>
+          <span className="text-slate-500">Cont. draw</span>
+          <span className="font-mono font-bold text-white">{resources.continuousPowerDraw.toFixed(0)}W</span>
         </div>
       </div>
     </div>
