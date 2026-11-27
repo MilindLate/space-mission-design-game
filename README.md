@@ -14,9 +14,7 @@ An award-targeted, scientifically rigorous web application that lets users desig
 
 ---
 
-## 🌐 Demo
 
-**Live URL**: _Deploy to Vercel (see Installation Guide)_
 
 ---
 
@@ -50,9 +48,7 @@ An award-targeted, scientifically rigorous web application that lets users desig
 
 ---
 
-## 📸 Screenshots
 
-_Add screenshots after deployment_
 
 ---
 
