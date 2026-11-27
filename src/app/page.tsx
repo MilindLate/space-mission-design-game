@@ -75,7 +75,7 @@ function LandingPage() {
         {/* Badge */}
         <div className="mb-8 inline-flex items-center gap-2 px-5 py-2 rounded-full border border-cyan-500/30 bg-cyan-500/5 text-cyan-400 text-xs font-mono uppercase tracking-[0.2em] fade-up">
           <span className="w-2 h-2 rounded-full bg-cyan-400 glow-cyan" />
-          NASA Space Apps Challenge 2026
+          Interactive Mission Simulator &amp; Astrodynamics Platform
         </div>
 
         {/* Title */}
@@ -256,7 +256,7 @@ function LandingPage() {
       {/* ── Footer ────────────────────────────────────────────── */}
       <footer className="relative z-10 border-t border-slate-800/50 py-10 text-center">
         <div className="text-xs text-slate-700 font-mono leading-relaxed">
-          NASA Space Apps Challenge 2026 · JPL Horizons · NASA NTRS · NASA NSSDC
+          Space Mission Design &amp; Simulation Platform · JPL Horizons · NTRS · NSSDC
           <br />
           Physics: Bate, Mueller &amp; White · Curtis · Vallado
         </div>

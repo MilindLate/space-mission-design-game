@@ -3,13 +3,13 @@ import './globals.css';
 import Navigation from '@/components/ui/Navigation';
 
 export const metadata: Metadata = {
-  title: 'Space Mission Design Game — NASA Space Apps Challenge 2026',
+  title: 'Space Mission Design Game — Interactive Mission Planning & Orbital Simulation',
   description:
     'Design, build, and launch your own space mission. Configure spacecraft subsystems, balance mass/power/cost constraints, and simulate orbital mechanics in real time.',
-  keywords: ['NASA', 'space', 'mission', 'orbital mechanics', 'spacecraft', 'simulation', 'game'],
+  keywords: ['space', 'mission design', 'astrodynamics', 'orbital mechanics', 'spacecraft engineering', 'simulation', 'game'],
   openGraph: {
     title: 'Space Mission Design Game',
-    description: 'NASA Space Apps Challenge 2026 — Interactive Mission Planner',
+    description: 'Interactive Space Mission Planning & Orbital Simulation Platform',
     type: 'website',
   },
 };

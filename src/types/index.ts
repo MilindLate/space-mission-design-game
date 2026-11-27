@@ -1,7 +1,7 @@
 // ============================================================
 // Space Mission Design Game — Type Definitions
-// NASA Space Apps Challenge 2026
-// All specs derived from NASA technical publications
+// Interactive Space Mission Planning & Orbital Simulation Platform
+// Subsystem and celestial specifications derived from validated aerospace technical publications
 // ============================================================
 
 // ── Orbital Destinations ────────────────────────────────────

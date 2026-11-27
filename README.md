@@ -1,6 +1,6 @@
 # Space Mission Design Game
 
-**NASA Space Apps Challenge 2026** | Interactive Mission Planning & Simulation Platform
+**Interactive Mission Planning & Simulation Platform**
 
 [![Build](https://img.shields.io/badge/build-passing-brightgreen)](/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)](/)
@@ -67,9 +67,9 @@ _Add screenshots after deployment_
 
 ---
 
-## 👥 Team
+## 👥 About
 
-Built for NASA Space Apps Challenge 2026.
+An open-source, interactive space mission design platform combining game mechanics with real aerospace engineering and astrodynamics principles.
 
 ---
 
